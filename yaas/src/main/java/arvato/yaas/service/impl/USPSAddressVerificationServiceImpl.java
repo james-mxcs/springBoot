@@ -77,10 +77,10 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 			url = new URL(requestURL);
 			final String nullFragment = null;
 			uri = new URI(url.getProtocol(), url.getHost(), url.getPath(), url.getQuery(), nullFragment);
-			LOG.info("URI is: " + uri.toString() + " is OK");
-			LOG.info("url path is: " + url.getPath());
-			LOG.info("url query is: " + url.getQuery());
-			LOG.info("url is: " + url.toString());
+			LOG.debug("URI is: " + uri.toString() + " is OK");
+			LOG.debug("url path is: " + url.getPath());
+			LOG.debug("url query is: " + url.getQuery());
+			LOG.debug("url is: " + url.toString());
 		}
 		catch (final MalformedURLException | URISyntaxException e)
 		{
@@ -95,8 +95,8 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 		request.addHeader("User-Agent", USER_AGENT);
 		final HttpResponse response = client.execute(request);
 
-		LOG.info("\nSending 'GET' request to URL: " + uri);
-		LOG.info("Response Code: " + response.getStatusLine().getStatusCode());
+		LOG.debug("\nSending 'GET' request to URL: " + uri);
+		LOG.debug("Response Code: " + response.getStatusLine().getStatusCode());
 
 		final BufferedReader rd = new BufferedReader(
 			new InputStreamReader(response.getEntity().getContent()));
@@ -107,7 +107,7 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 			result.append(line);
 		}
 
-		LOG.info("The response is: " + result.toString());
+		LOG.debug("The response is: " + result.toString());
 		return result.toString();
 	}
 
