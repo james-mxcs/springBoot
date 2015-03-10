@@ -29,6 +29,8 @@ import arvato.yaas.data.AddressVerificationData;
 import arvato.yaas.data.AddressVerificationForm;
 import arvato.yaas.service.USPSAddressVerificationService;
 
+import com.google.common.base.Throwables;
+
 @Service("uSPSAddressVerificationService")
 public class USPSAddressVerificationServiceImpl implements USPSAddressVerificationService{
 	private static final Logger LOG = Logger.getLogger(USPSAddressVerificationServiceImpl.class);
@@ -49,7 +51,7 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 		}
 		catch (final IOException e)
 		{
-			LOG.error(e);
+			Throwables.propagate(e);
 		}
 
 
@@ -64,12 +66,7 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 
 	private String buildXmlFromObject(final AddressVerificationForm addressForm){
 		final String temp = String.format(xmlFormat, addressForm.getUspsID(), addressForm.getAddress1(), addressForm.getAddress2(), addressForm.getCity(), addressForm.getState(), addressForm.getZipcode5());
-//		try {
-//			return URLEncoder.encode(temp, "iso-8859-1");
-//		} catch (UnsupportedEncodingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
 		return temp;
 	}
 
@@ -77,19 +74,20 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 		URI uri = null;
 		URL url = null;
 		try {
-		      url = new URL(requestURL);
-		      final String nullFragment = null;
-		      uri = new URI(url.getProtocol(), url.getHost(), url.getPath(), url.getQuery(), nullFragment);
-		      System.out.println("URI " + uri.toString() + " is OK");
-		      System.out.println("url path " + url.getPath());
-		      System.out.println("url query " + url.getQuery());
-		      System.out.println("url " + url.toString());
+			url = new URL(requestURL);
+			final String nullFragment = null;
+			uri = new URI(url.getProtocol(), url.getHost(), url.getPath(), url.getQuery(), nullFragment);
+			LOG.info("URI is: " + uri.toString() + " is OK");
+			LOG.info("url path is: " + url.getPath());
+			LOG.info("url query is: " + url.getQuery());
+			LOG.info("url is: " + url.toString());
 		}
 		catch (final MalformedURLException | URISyntaxException e)
 		{
-			LOG.error(e);
-		      System.out.println("URL " + requestURL + " is a malformed URL");
-		    }
+			LOG.error("URL " + requestURL + " is a malformed URL");
+			Throwables.propagate(e);
+
+		}
 
 		final HttpClient client = HttpClientBuilder.create().build();
 		final HttpGet request = new HttpGet(uri);
@@ -97,9 +95,8 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 		request.addHeader("User-Agent", USER_AGENT);
 		final HttpResponse response = client.execute(request);
 
-		System.out.println("\nSending 'GET' request to URL : " + uri);
-		System.out.println("Response Code : "
-	                + response.getStatusLine().getStatusCode());
+		LOG.info("\nSending 'GET' request to URL: " + uri);
+		LOG.info("Response Code: " + response.getStatusLine().getStatusCode());
 
 		final BufferedReader rd = new BufferedReader(
 			new InputStreamReader(response.getEntity().getContent()));
@@ -110,7 +107,7 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 			result.append(line);
 		}
 
-		System.out.println("The response is " + result.toString());
+		LOG.info("The response is: " + result.toString());
 		return result.toString();
 	}
 
@@ -129,7 +126,7 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 		}
 		catch (final JAXBException e)
 		{
-			LOG.error(e);
+			Throwables.propagate(e);
 		}
 
 		return new ArrayList<AddressVerificationData>();
