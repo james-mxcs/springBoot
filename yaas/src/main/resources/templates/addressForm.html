@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<body>
+	<form action="/submitAddress" method="post" th:action="@{/submitAddress}">
+		<p>USPS user id: <input type="text" name="uspsID" /></p>
+		<p>Address 1: <input type="text" name="address1" /></p>
+  		<p>Address 2: <input type="text" name="address2" /></p>
+  		<p>City: <input type="text" name="city" /></p>
+  		<p>State: <input type="text" name="state" /></p>
+  		<p>Zipcode: <input type="text" name="zipcode5" /></p>
+  		<input type="submit" value="Submit" th:value="Submit"/>
+	</form>
+</body>
+</html>

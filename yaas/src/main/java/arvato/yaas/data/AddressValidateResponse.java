@@ -8,6 +8,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "AddressValidateResponse")
 public class AddressValidateResponse
 {
+	private String errorMessage;
+
+	private boolean success;
+
 	private ArrayList<AddressVerificationData> addressList;
 
 	public ArrayList<AddressVerificationData> getAddressList()
@@ -21,4 +25,25 @@ public class AddressValidateResponse
 	{
 		this.addressList = addressList;
 	}
+
+	public String getErrorMessage()
+	{
+		return errorMessage;
+	}
+
+	public void setErrorMessage(final String errorMessage)
+	{
+		this.errorMessage = errorMessage;
+	}
+
+	public boolean isSuccess()
+	{
+		return success;
+	}
+
+	public void setSuccess(final boolean success)
+	{
+		this.success = success;
+	}
+
 }

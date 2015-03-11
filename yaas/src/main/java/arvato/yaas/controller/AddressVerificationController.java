@@ -1,7 +1,7 @@
 package arvato.yaas.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.xml.sax.SAXException;
 
-import arvato.yaas.data.AddressVerificationData;
+import arvato.yaas.data.AddressFormValidationResult;
+import arvato.yaas.data.AddressValidateResponse;
 import arvato.yaas.data.AddressVerificationForm;
+import arvato.yaas.service.AddressFormValidationService;
 import arvato.yaas.service.USPSAddressVerificationService;
 
 @Controller
@@ -24,6 +26,9 @@ public class AddressVerificationController {
 
 	@Resource(name = "uSPSAddressVerificationService")
 	private USPSAddressVerificationService uSPSAddressVerificationService;
+
+	@Resource(name = "addressFormValidationService")
+	private AddressFormValidationService addressFormValidationService;
 
 
 	public USPSAddressVerificationService getuSPSAddressVerificationService() {
@@ -35,8 +40,28 @@ public class AddressVerificationController {
 		this.uSPSAddressVerificationService = uSPSAddressVerificationService;
 	}
 
-	@Value("${application.message:Hello World}")
-	private final String message = "Hello World";
+	public AddressFormValidationService getAddressFormValidationService()
+	{
+		return addressFormValidationService;
+	}
+
+	public void setAddressFormValidationService(final AddressFormValidationService addressFormValidationService)
+	{
+		this.addressFormValidationService = addressFormValidationService;
+	}
+
+	public String getMessage()
+	{
+		return message;
+	}
+
+	public void setMessage(final String message)
+	{
+		this.message = message;
+	}
+
+	@Value("${application.message}")
+	private String message = "Hello World";
 
 	@RequestMapping("/")
 	public String welcome(final Map<String, Object> model) {
@@ -55,16 +80,32 @@ public class AddressVerificationController {
 	public String handleSubmit(@ModelAttribute("addressForm") final AddressVerificationForm addressForm, final ModelMap model)
 			throws SAXException, ParserConfigurationException
 	{
+		final AddressFormValidationResult formResult = getAddressFormValidationService().validateForm(addressForm);
+
+		if (formResult.getErrorMessages().size() != 0)
+		{
+			model.put("errorMessages", formResult.getErrorMessages());
+			return "error";
+		}
+
 		model.put("address1", addressForm.getAddress1());
 		model.put("address2", addressForm.getAddress2());
 		model.put("city", addressForm.getCity());
 		model.put("state", addressForm.getState());
 		model.put("zipcode5", addressForm.getZipcode5());
 
-		List<AddressVerificationData> result = null;
+		AddressValidateResponse result = null;
 		result = uSPSAddressVerificationService.verifyAddressForm(addressForm);
 
-		model.put("result", result);
+		if (!(result.isSuccess()))
+		{
+			final ArrayList<String> errorMessages = new ArrayList<>();
+			errorMessages.add(result.getErrorMessage());
+			model.put("errorMessages", errorMessages);
+			return "error";
+		}
+
+		model.put("result", result.getAddressList());
 		return "displayForm";
 	}
 }

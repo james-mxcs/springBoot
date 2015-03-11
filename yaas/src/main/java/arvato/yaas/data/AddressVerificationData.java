@@ -10,6 +10,7 @@ public class AddressVerificationData {
 	private String state;
 	private String zipcode5;
 	private String zipcode4;
+	private ErrorResponseData errorResponseData;
 
 
 	public String getAddress1() {
@@ -69,6 +70,17 @@ public class AddressVerificationData {
 	@XmlElement(name = "Zip4")
 	public void setZipcode4(final String zipcode4) {
 		this.zipcode4 = zipcode4;
+	}
+
+	public ErrorResponseData getErrorResponseData()
+	{
+		return errorResponseData;
+	}
+
+	@XmlElement(name = "Error")
+	public void setErrorResponseData(final ErrorResponseData errorResponseData)
+	{
+		this.errorResponseData = errorResponseData;
 	}
 
 

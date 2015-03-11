@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<body>
+	<table style="width:100%">
+      <tr th:each="i : ${result}">
+        <td th:text="${'Address1: ' + i.address1}">Address1:</td>
+        <td th:text="${'Address2: ' + i.address2}">Address2:</td>
+        <td th:text="${'City: ' + i.city}">City:</td>
+        <td th:text="${'State: ' + i.state}">State:</td>
+        <td th:text="${'Zipcode5: ' + i.zipcode5}">Zipcode5:</td>
+        <td th:text="${'Zipcode4: ' + i.zipcode4}">Zipcode4:</td>
+      </tr>
+    </table>
+</body>
+
+</html>

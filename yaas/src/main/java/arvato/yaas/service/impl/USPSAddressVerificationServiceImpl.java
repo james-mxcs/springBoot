@@ -9,8 +9,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -25,8 +23,8 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import arvato.yaas.data.AddressValidateResponse;
-import arvato.yaas.data.AddressVerificationData;
 import arvato.yaas.data.AddressVerificationForm;
+import arvato.yaas.data.ErrorResponseData;
 import arvato.yaas.service.USPSAddressVerificationService;
 
 import com.google.common.base.Throwables;
@@ -36,12 +34,14 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 	private static final Logger LOG = Logger.getLogger(USPSAddressVerificationServiceImpl.class);
 	private static final String USER_AGENT = "Mozilla/5.0";
 	private static final String xmlFormat = "<AddressValidateRequest USERID=\"%s\"><Address ID=\"0\"><Address1>%s</Address1><Address2>%s</Address2><City>%s</City><State>%s</State><Zip5>%s</Zip5><Zip4></Zip4></Address></AddressValidateRequest>";
-
+	private static final String ERROR_MESSAGE = "Network Error! Please try again later.";
 
 	@Override
-	public List<AddressVerificationData> verifyAddressForm(final AddressVerificationForm addressForm) {
+	public AddressValidateResponse verifyAddressForm(final AddressVerificationForm addressForm)
+	{
 		final String xmlParameter = buildXmlFromObject(addressForm);
-		final String requestURL = new StringBuilder("http://production.shippingapis.com/ShippingAPITest.dll?API=Verify&XML=").append(xmlParameter).toString();
+		final String requestURL = new StringBuilder("http://production.shippingapis.com/ShippingAPI.dll?API=Verify&XML=").append(
+				xmlParameter).toString();
 
 		String response = null;
 
@@ -51,17 +51,21 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 		}
 		catch (final IOException e)
 		{
-			Throwables.propagate(e);
+			LOG.error(e);
+			final AddressValidateResponse addressValidateResponse = new AddressValidateResponse();
+			addressValidateResponse.setSuccess(false);
+			addressValidateResponse.setErrorMessage(ERROR_MESSAGE);
+			return addressValidateResponse;
 		}
 
 
 
-		List<AddressVerificationData> list = null;
+		AddressValidateResponse convertedResponse = null;
 
-		list = convertResponseToDataObject(response);
+		convertedResponse = convertResponseToDataObject(response);
 
 
-		return list;
+		return convertedResponse;
 	}
 
 	private String buildXmlFromObject(final AddressVerificationForm addressForm){
@@ -111,7 +115,7 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 		return result.toString();
 	}
 
-	private List<AddressVerificationData> convertResponseToDataObject(final String response)
+	private AddressValidateResponse convertResponseToDataObject(final String response)
 	{
 
 		final InputStream is = new ByteArrayInputStream(response.getBytes());
@@ -122,14 +126,24 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 			jaxbContext = JAXBContext.newInstance(AddressValidateResponse.class);
 			final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 			final AddressValidateResponse addressData = (AddressValidateResponse) jaxbUnmarshaller.unmarshal(is);
-			return addressData.getAddressList();
+			final ErrorResponseData errorResponseData = addressData.getAddressList().get(0).getErrorResponseData();
+			if (errorResponseData == null)
+			{
+				addressData.setSuccess(true);
+			}
+			else
+			{
+				addressData.setSuccess(false);
+				addressData.setErrorMessage(errorResponseData.getDescription());
+			}
+			return addressData;
 		}
 		catch (final JAXBException e)
 		{
 			Throwables.propagate(e);
 		}
 
-		return new ArrayList<AddressVerificationData>();
+		return new AddressValidateResponse();
 
 
 	}
