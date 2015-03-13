@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<body>
-    <ul>
-	  <li th:each="errorMessage : ${errorMessages}" th:text="${errorMessage}">error: </li>
-	</ul>
-</body>
+	<head>
+		<link rel="stylesheet" type="text/css" media="all" href="/resources/css/bootstrap.css" th:href="@{/resources/css/bootstrap.min.css}" />
+	</head><body>
+		<div th:include="template :: header"></div>
+		<div class="container span6 offset3">
+			<ul class="list-group">
+			  <li style="width: 50%" class="list-group-item" th:each="errorMessage : ${errorMessages}" th:text="${errorMessage}">error: </li>
+			</ul>
+		</div>
+	    
+		<div th:include="template :: footer"></div> 
+	</body>
 
 </html>

@@ -1,14 +1,61 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+	<link rel="stylesheet" type="text/css" media="all" href="/resources/css/bootstrap.css" th:href="@{/resources/css/bootstrap.min.css}" />
+</head>
 <body>
-	<form action="/submitAddress" method="post" th:action="@{/submitAddress}">
-		<p>USPS user id: <input type="text" name="uspsID" /></p>
-		<p>Address 1: <input type="text" name="address1" /></p>
-  		<p>Address 2: <input type="text" name="address2" /></p>
-  		<p>City: <input type="text" name="city" /></p>
-  		<p>State: <input type="text" name="state" /></p>
-  		<p>Zipcode: <input type="text" name="zipcode5" /></p>
-  		<input type="submit" value="Submit" th:value="Submit"/>
-	</form>
+	<div th:include="template :: header"></div>
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-6 col-xs-offset-3">
+				<form class="form-horizontal" action="/submitAddress" method="post" th:action="@{/submitAddress}">
+				    <div class="form-group">
+				        <label for="uspsID" class="control-label col-xs-2">USPS User ID</label>
+				        <div class="col-xs-8 ">
+				            <input type="text" class="form-control" id="uspsID" name="uspsID" placeholder="USPS USER ID" />
+				        </div>
+				    </div>
+				    <div class="form-group">
+				        <label for="address1" class="control-label col-xs-2">Address 1</label>
+				        <div class="col-xs-8">
+				            <input type="text" class="form-control" id="address1" name="address1" placeholder="Address 1" />
+				        </div>
+				    </div>
+				    <div class="form-group">
+				        <label for="address2" class="control-label col-xs-2">Address 2</label>
+				        <div class="col-xs-8">
+				            <input type="text" class="form-control" id="address2" name="address2" placeholder="Address 2" />
+				        </div>
+				    </div>
+				    <div class="form-group">
+				        <label for="city" class="control-label col-xs-2">City</label>
+				        <div class="col-xs-8">
+				            <input type="text" class="form-control" id="city" name="city" placeholder="City" />
+				        </div>
+				    </div>
+				    <div class="form-group">
+				        <label for="state" class="control-label col-xs-2">State</label>
+				        <div class="col-xs-8">
+				            <input type="text" class="form-control" id="state" name="state" placeholder="State" />
+				        </div>
+				    </div>
+				    <div class="form-group">
+				        <label for="zipcode5" class="control-label col-xs-2">Zipcode</label>
+				        <div class="col-xs-8">
+				            <input type="text" class="form-control" id="zipcode5" name="zipcode5" placeholder="Zipcode" />
+				        </div>
+				    </div>
+				    <div class="form-group">
+				        <div class="col-xs-offset-2 col-xs-4">
+				            <button type="submit" class="btn btn-primary" value="Submit" th:value="Submit">Submit</button>
+				        </div>
+				    </div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div th:include="template :: footer"></div> 
+	<script src="http://code.jquery.com/jquery.min.js"></script>
+    <script src="/resources/js/bootstrap.min.js"></script>
 </body>
 </html>

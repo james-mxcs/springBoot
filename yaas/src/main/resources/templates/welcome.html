@@ -1,10 +1,30 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
     <head>
-        <title>Spring Security Example</title>
+    	<link rel="stylesheet" type="text/css" media="all" href="/resources/css/bootstrap.css" th:href="@{/resources/css/bootstrap.min.css}" />
+	
+        <title>Arvato Yaas</title>
     </head>
     <body>
-        <p th:text = "${'Message: ' + message}">Message: ${message}</p>
-		<a href="/addressForm" th:href="@{/addressForm}">Verify An Address</a>
+    	<div th:include="template :: header"></div>
+    	
+    	<div  style="width: 50%" class="table-responsive container">
+    		<table  class="table table-bordered">
+    			<tbody>
+    				<tr>
+	    				<td class="text-center" th:text="${'Message: ' + message}">Message: ${message}</td>
+	    			</tr>
+	    			<tr>
+	    				<td class="text-center">
+	    					<a href="/addressForm" th:href="@{/addressForm}">Verify An Address</a>
+	    				</td>
+	    				
+	    			</tr>
+    			</tbody>
+    			
+    		</table>
+    	</div>
+    	
+		<div th:include="template :: footer"></div> 
     </body>
 </html>
