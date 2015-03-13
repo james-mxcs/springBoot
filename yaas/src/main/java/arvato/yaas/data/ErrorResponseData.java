@@ -1,7 +1,9 @@
 package arvato.yaas.data;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name = "Error")
 public class ErrorResponseData
 {
 	private String number;

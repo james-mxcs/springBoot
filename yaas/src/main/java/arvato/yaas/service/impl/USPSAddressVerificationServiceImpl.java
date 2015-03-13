@@ -119,33 +119,55 @@ public class USPSAddressVerificationServiceImpl implements USPSAddressVerificati
 	{
 
 		final InputStream is = new ByteArrayInputStream(response.getBytes());
-
 		JAXBContext jaxbContext;
-		try
+
+		if (response.contains("<AddressValidateResponse>"))
 		{
-			jaxbContext = JAXBContext.newInstance(AddressValidateResponse.class);
-			final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			final AddressValidateResponse addressData = (AddressValidateResponse) jaxbUnmarshaller.unmarshal(is);
-			final ErrorResponseData errorResponseData = addressData.getAddressList().get(0).getErrorResponseData();
-			if (errorResponseData == null)
+			try
 			{
-				addressData.setSuccess(true);
+				jaxbContext = JAXBContext.newInstance(AddressValidateResponse.class);
+				final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+				final AddressValidateResponse addressData = (AddressValidateResponse) jaxbUnmarshaller.unmarshal(is);
+				final ErrorResponseData errorResponseData = addressData.getAddressList().get(0).getErrorResponseData();
+				if (errorResponseData == null)
+				{
+					addressData.setSuccess(true);
+				}
+				else
+				{
+					addressData.setSuccess(false);
+					addressData.setErrorMessage(errorResponseData.getDescription());
+				}
+				return addressData;
 			}
-			else
+			catch (final JAXBException e)
 			{
-				addressData.setSuccess(false);
-				addressData.setErrorMessage(errorResponseData.getDescription());
+				Throwables.propagate(e);
 			}
-			return addressData;
 		}
-		catch (final JAXBException e)
+		else
 		{
-			Throwables.propagate(e);
+			try
+			{
+				jaxbContext = JAXBContext.newInstance(ErrorResponseData.class);
+				final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+				final ErrorResponseData addressData = (ErrorResponseData) jaxbUnmarshaller.unmarshal(is);
+
+				if (addressData != null && addressData.getSource().equals("USPSCOM::DoAuth"))
+				{
+					final AddressValidateResponse result = new AddressValidateResponse();
+					result.setSuccess(false);
+					result.setErrorMessage("Authorization Error! Please check if you provide the correct USPS USER ID.");
+					return result;
+				}
+			}
+			catch (final JAXBException e)
+			{
+				Throwables.propagate(e);
+			}
 		}
 
 		return new AddressValidateResponse();
-
-
 	}
 
 }

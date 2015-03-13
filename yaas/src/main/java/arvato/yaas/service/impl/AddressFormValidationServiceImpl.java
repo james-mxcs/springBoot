@@ -65,10 +65,23 @@ public class AddressFormValidationServiceImpl implements AddressFormValidationSe
 		return true;
 	}
 
+	protected boolean isValidUSPSUserID(final String userID)
+	{
+		if (userID == null || userID.isEmpty())
+		{
+			return false;
+		}
+		return true;
+	}
+
 	@Override
 	public AddressFormValidationResult validateForm(final AddressVerificationForm addressForm)
 	{
 		final AddressFormValidationResult result = new AddressFormValidationResult();
+		if (!isValidUSPSUserID(addressForm.getUspsID()))
+		{
+			result.addErrorMessage("USPS User ID cannot be empty!");
+		}
 		if (!isValidAddress2(addressForm.getAddress2()))
 		{
 			result.addErrorMessage("Address2 cannot be empty or have more than 38 characters!");
